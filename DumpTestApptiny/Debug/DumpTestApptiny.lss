@@ -1,0 +1,276 @@
+
+DumpTestApptiny.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000f0  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  000000f0  00000184  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000003  00800060  00800060  00000184  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000184  2**0
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000058  00000000  00000000  000001b4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000001dd  00000000  00000000  0000020c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000000f6  00000000  00000000  000003e9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000162  00000000  00000000  000004df  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000088  00000000  00000000  00000644  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000001e1  00000000  00000000  000006cc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    0000006f  00000000  00000000  000008ad  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000038  00000000  00000000  0000091c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+	   PA2	 - 8
+	   PA1	 - 9
+	                                                                        */
+	/************************************************************************/
+	
+	switch (pinNumber)
+   0:	10 c0       	rjmp	.+32     	; 0x22 <__ctors_end>
+   2:	1f c0       	rjmp	.+62     	; 0x42 <__bad_interrupt>
+   4:	1f c0       	rjmp	.+62     	; 0x44 <__vector_2>
+   6:	1d c0       	rjmp	.+58     	; 0x42 <__bad_interrupt>
+   8:	1c c0       	rjmp	.+56     	; 0x42 <__bad_interrupt>
+   a:	1b c0       	rjmp	.+54     	; 0x42 <__bad_interrupt>
+   c:	1a c0       	rjmp	.+52     	; 0x42 <__bad_interrupt>
+   e:	19 c0       	rjmp	.+50     	; 0x42 <__bad_interrupt>
+  10:	18 c0       	rjmp	.+48     	; 0x42 <__bad_interrupt>
+	{
+		case 1:
+			DDRB |= (1 << PB3);
+  12:	17 c0       	rjmp	.+46     	; 0x42 <__bad_interrupt>
+		break;
+  14:	16 c0       	rjmp	.+44     	; 0x42 <__bad_interrupt>
+		case 2:
+			DDRB |= (1 << PB2);
+  16:	15 c0       	rjmp	.+42     	; 0x42 <__bad_interrupt>
+		break;
+  18:	14 c0       	rjmp	.+40     	; 0x42 <__bad_interrupt>
+		case 3:
+			DDRA |= (1 << PA7);
+  1a:	13 c0       	rjmp	.+38     	; 0x42 <__bad_interrupt>
+		break;
+  1c:	12 c0       	rjmp	.+36     	; 0x42 <__bad_interrupt>
+		case 4:
+			DDRA |= (1 << PA6);
+  1e:	11 c0       	rjmp	.+34     	; 0x42 <__bad_interrupt>
+		break;
+  20:	10 c0       	rjmp	.+32     	; 0x42 <__bad_interrupt>
+
+00000022 <__ctors_end>:
+		case 5:
+			DDRA |= (1 << PA5);
+  22:	11 24       	eor	r1, r1
+		break;
+  24:	1f be       	out	0x3f, r1	; 63
+		case 6:
+			DDRA |= (1 << PA4);
+  26:	cf e5       	ldi	r28, 0x5F	; 95
+		break;
+  28:	d2 e0       	ldi	r29, 0x02	; 2
+		case 7:
+			DDRA |= (1 << PA3);
+  2a:	de bf       	out	0x3e, r29	; 62
+		break;
+  2c:	cd bf       	out	0x3d, r28	; 61
+
+0000002e <__do_clear_bss>:
+		case 8:
+			DDRA |= (1 << PA2);
+  2e:	20 e0       	ldi	r18, 0x00	; 0
+		break;
+  30:	a0 e6       	ldi	r26, 0x60	; 96
+		case 9:
+		DDRA |= (1 << PA1);
+  32:	b0 e0       	ldi	r27, 0x00	; 0
+  34:	01 c0       	rjmp	.+2      	; 0x38 <.do_clear_bss_start>
+
+00000036 <.do_clear_bss_loop>:
+  36:	1d 92       	st	X+, r1
+
+00000038 <.do_clear_bss_start>:
+  38:	a3 36       	cpi	r26, 0x63	; 99
+  3a:	b2 07       	cpc	r27, r18
+  3c:	e1 f7       	brne	.-8      	; 0x36 <.do_clear_bss_loop>
+  3e:	1c d0       	rcall	.+56     	; 0x78 <main>
+  40:	55 c0       	rjmp	.+170    	; 0xec <_exit>
+
+00000042 <__bad_interrupt>:
+  42:	de cf       	rjmp	.-68     	; 0x0 <__vectors>
+
+00000044 <__vector_2>:
+// 	}
+// }
+
+//////////////////////////////////////////////////////////////////////////
+
+ISR( PCINT0_vect ){
+  44:	1f 92       	push	r1
+  46:	0f 92       	push	r0
+  48:	0f b6       	in	r0, 0x3f	; 63
+  4a:	0f 92       	push	r0
+  4c:	11 24       	eor	r1, r1
+  4e:	8f 93       	push	r24
+// 		chCount = 0;
+// 		devState = (!devState);
+// 		serviceRoutine();// call for this routine to be serviced.
+// 	}	
+	
+	if ( (PINA&(1<<PINA3)) == 0x00 && devState == true)
+  50:	cb 99       	sbic	0x19, 3	; 25
+  52:	04 c0       	rjmp	.+8      	; 0x5c <__vector_2+0x18>
+  54:	80 91 62 00 	lds	r24, 0x0062
+  58:	81 11       	cpse	r24, r1
+  5a:	04 c0       	rjmp	.+8      	; 0x64 <__vector_2+0x20>
+		PORTA &= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
+		devState = false;
+	}
+	
+	//PORTA = PORTA^(LED1_ON);	
+	devState = true;
+  5c:	81 e0       	ldi	r24, 0x01	; 1
+  5e:	80 93 62 00 	sts	0x0062, r24
+  62:	04 c0       	rjmp	.+8      	; 0x6c <__vector_2+0x28>
+// 		serviceRoutine();// call for this routine to be serviced.
+// 	}	
+	
+	if ( (PINA&(1<<PINA3)) == 0x00 && devState == true)
+	{		
+		PORTA &= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
+  64:	8b b3       	in	r24, 0x1b	; 27
+  66:	87 70       	andi	r24, 0x07	; 7
+  68:	8b bb       	out	0x1b, r24	; 27
+  6a:	f8 cf       	rjmp	.-16     	; 0x5c <__vector_2+0x18>
+	}
+	
+	//PORTA = PORTA^(LED1_ON);	
+	devState = true;
+	
+}
+  6c:	8f 91       	pop	r24
+  6e:	0f 90       	pop	r0
+  70:	0f be       	out	0x3f, r0	; 63
+  72:	0f 90       	pop	r0
+  74:	1f 90       	pop	r1
+  76:	18 95       	reti
+
+00000078 <main>:
+//////////////////////////////////////////////////////////////////////////
+
+
+int main(void)
+{	
+	MCUCR = 0x00;
+  78:	15 be       	out	0x35, r1	; 53
+	cli();
+  7a:	f8 94       	cli
+	DDRA |= ( LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set data direction.
+  7c:	8a b3       	in	r24, 0x1a	; 26
+  7e:	87 60       	ori	r24, 0x07	; 7
+  80:	8a bb       	out	0x1a, r24	; 26
+	DDRA |= (0<<PWR);										// set PWR button pin as input.
+  82:	8a b3       	in	r24, 0x1a	; 26
+  84:	8a bb       	out	0x1a, r24	; 26
+	PORTA |= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
+  86:	8b b3       	in	r24, 0x1b	; 27
+  88:	87 60       	ori	r24, 0x07	; 7
+  8a:	8b bb       	out	0x1b, r24	; 27
+	
+	
+	
+	
+	// code to plant interrupt on button PWR button on PA3.
+	cli();
+  8c:	f8 94       	cli
+	nTimeMillis = 0;	
+  8e:	10 92 61 00 	sts	0x0061, r1
+  92:	10 92 60 00 	sts	0x0060, r1
+	PCMSK0 |= ( 1 << PCINT3);	// set bit PCINT3 as button is on this interrupt.
+  96:	93 9a       	sbi	0x12, 3	; 18
+	GIMSK |= ( 1 << PCIE0);	// enable interrupt pin change.from 0 - 7 pcints. where pcint3 is been configured.
+  98:	8b b7       	in	r24, 0x3b	; 59
+  9a:	80 61       	ori	r24, 0x10	; 16
+  9c:	8b bf       	out	0x3b, r24	; 59
+	sei();
+  9e:	78 94       	sei
+	
+    while(1)
+    {
+         //code goes here.		 
+		 
+		if( (PINA&(1<<PINA3)) == (0x00) && devState == false){
+  a0:	cb 99       	sbic	0x19, 3	; 25
+  a2:	05 c0       	rjmp	.+10     	; 0xae <main+0x36>
+  a4:	80 91 62 00 	lds	r24, 0x0062
+  a8:	81 11       	cpse	r24, r1
+  aa:	05 c0       	rjmp	.+10     	; 0xb6 <main+0x3e>
+  ac:	0a c0       	rjmp	.+20     	; 0xc2 <main+0x4a>
+			sleep_enable();
+			sleep_mode();
+			
+		}
+		
+		if (devState == true)
+  ae:	80 91 62 00 	lds	r24, 0x0062
+  b2:	88 23       	and	r24, r24
+  b4:	a9 f3       	breq	.-22     	; 0xa0 <main+0x28>
+		{
+			PORTA &= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
+  b6:	8b b3       	in	r24, 0x1b	; 27
+  b8:	87 70       	andi	r24, 0x07	; 7
+  ba:	8b bb       	out	0x1b, r24	; 27
+			devState = false;
+  bc:	10 92 62 00 	sts	0x0062, r1
+  c0:	ef cf       	rjmp	.-34     	; 0xa0 <main+0x28>
+// 			{
+// 				nTimeMillis = 0;
+// 				continue;
+// 			}
+// 			
+			nTimeMillis = 0;
+  c2:	10 92 61 00 	sts	0x0061, r1
+  c6:	10 92 60 00 	sts	0x0060, r1
+			
+			PORTA &= (LED0_OFF | LED1_OFF );			// set HIGH.Set SHDN to HIGH (Active LOW)	
+  ca:	8b b3       	in	r24, 0x1b	; 27
+  cc:	1b ba       	out	0x1b, r1	; 27
+								
+			devState == true;
+								
+			
+					
+			set_sleep_mode( SLEEP_MODE_PWR_DOWN );			
+  ce:	85 b7       	in	r24, 0x35	; 53
+  d0:	87 7e       	andi	r24, 0xE7	; 231
+  d2:	80 61       	ori	r24, 0x10	; 16
+  d4:	85 bf       	out	0x35, r24	; 53
+			sleep_enable();
+  d6:	85 b7       	in	r24, 0x35	; 53
+  d8:	80 62       	ori	r24, 0x20	; 32
+  da:	85 bf       	out	0x35, r24	; 53
+			sleep_mode();
+  dc:	85 b7       	in	r24, 0x35	; 53
+  de:	80 62       	ori	r24, 0x20	; 32
+  e0:	85 bf       	out	0x35, r24	; 53
+  e2:	88 95       	sleep
+  e4:	85 b7       	in	r24, 0x35	; 53
+  e6:	8f 7d       	andi	r24, 0xDF	; 223
+  e8:	85 bf       	out	0x35, r24	; 53
+  ea:	e1 cf       	rjmp	.-62     	; 0xae <main+0x36>
+
+000000ec <_exit>:
+  ec:	f8 94       	cli
+
+000000ee <__stop_program>:
+  ee:	ff cf       	rjmp	.-2      	; 0xee <__stop_program>
