@@ -3,29 +3,29 @@ DumpTestApptiny.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000000f0  00000000  00000000  00000094  2**1
+  0 .text         00000162  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  000000f0  00000184  2**0
+  1 .data         00000000  00800060  00000162  000001f6  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000003  00800060  00800060  00000184  2**0
+  2 .bss          00000003  00800060  00800060  000001f6  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000184  2**0
+  3 .comment      00000030  00000000  00000000  000001f6  2**0
                   CONTENTS, READONLY
-  4 .debug_aranges 00000058  00000000  00000000  000001b4  2**0
+  4 .debug_aranges 00000058  00000000  00000000  00000226  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   000001dd  00000000  00000000  0000020c  2**0
+  5 .debug_info   00000204  00000000  00000000  0000027e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000000f6  00000000  00000000  000003e9  2**0
+  6 .debug_abbrev 00000110  00000000  00000000  00000482  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000162  00000000  00000000  000004df  2**0
+  7 .debug_line   00000188  00000000  00000000  00000592  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000088  00000000  00000000  00000644  2**2
+  8 .debug_frame  00000088  00000000  00000000  0000071c  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000001e1  00000000  00000000  000006cc  2**0
+  9 .debug_str    000001e7  00000000  00000000  000007a4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000006f  00000000  00000000  000008ad  2**0
+ 10 .debug_loc    000000a5  00000000  00000000  0000098b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000038  00000000  00000000  0000091c  2**0
+ 11 .debug_ranges 00000038  00000000  00000000  00000a30  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -103,8 +103,8 @@ Disassembly of section .text:
   38:	a3 36       	cpi	r26, 0x63	; 99
   3a:	b2 07       	cpc	r27, r18
   3c:	e1 f7       	brne	.-8      	; 0x36 <.do_clear_bss_loop>
-  3e:	1c d0       	rcall	.+56     	; 0x78 <main>
-  40:	55 c0       	rjmp	.+170    	; 0xec <_exit>
+  3e:	19 d0       	rcall	.+50     	; 0x72 <main>
+  40:	8e c0       	rjmp	.+284    	; 0x15e <_exit>
 
 00000042 <__bad_interrupt>:
   42:	de cf       	rjmp	.-68     	; 0x0 <__vectors>
@@ -129,148 +129,258 @@ ISR( PCINT0_vect ){
 	
 	if ( (PINA&(1<<PINA3)) == 0x00 && devState == true)
   50:	cb 99       	sbic	0x19, 3	; 25
-  52:	04 c0       	rjmp	.+8      	; 0x5c <__vector_2+0x18>
+  52:	09 c0       	rjmp	.+18     	; 0x66 <__vector_2+0x22>
   54:	80 91 62 00 	lds	r24, 0x0062
-  58:	81 11       	cpse	r24, r1
-  5a:	04 c0       	rjmp	.+8      	; 0x64 <__vector_2+0x20>
-		PORTA &= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
-		devState = false;
-	}
-	
-	//PORTA = PORTA^(LED1_ON);	
-	devState = true;
-  5c:	81 e0       	ldi	r24, 0x01	; 1
-  5e:	80 93 62 00 	sts	0x0062, r24
-  62:	04 c0       	rjmp	.+8      	; 0x6c <__vector_2+0x28>
-// 		serviceRoutine();// call for this routine to be serviced.
-// 	}	
-	
-	if ( (PINA&(1<<PINA3)) == 0x00 && devState == true)
+  58:	88 23       	and	r24, r24
+  5a:	29 f0       	breq	.+10     	; 0x66 <__vector_2+0x22>
 	{		
-		PORTA &= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
-  64:	8b b3       	in	r24, 0x1b	; 27
-  66:	87 70       	andi	r24, 0x07	; 7
-  68:	8b bb       	out	0x1b, r24	; 27
-  6a:	f8 cf       	rjmp	.-16     	; 0x5c <__vector_2+0x18>
+		PORTA |= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
+  5c:	8b b3       	in	r24, 0x1b	; 27
+  5e:	87 60       	ori	r24, 0x07	; 7
+  60:	8b bb       	out	0x1b, r24	; 27
+		devState = false;
+  62:	10 92 62 00 	sts	0x0062, r1
 	}
 	
-	//PORTA = PORTA^(LED1_ON);	
-	devState = true;
+		
+	//devState = true;
 	
 }
-  6c:	8f 91       	pop	r24
-  6e:	0f 90       	pop	r0
-  70:	0f be       	out	0x3f, r0	; 63
-  72:	0f 90       	pop	r0
-  74:	1f 90       	pop	r1
-  76:	18 95       	reti
+  66:	8f 91       	pop	r24
+  68:	0f 90       	pop	r0
+  6a:	0f be       	out	0x3f, r0	; 63
+  6c:	0f 90       	pop	r0
+  6e:	1f 90       	pop	r1
+  70:	18 95       	reti
 
-00000078 <main>:
+00000072 <main>:
 //////////////////////////////////////////////////////////////////////////
 
 
 int main(void)
 {	
 	MCUCR = 0x00;
-  78:	15 be       	out	0x35, r1	; 53
+  72:	15 be       	out	0x35, r1	; 53
 	cli();
-  7a:	f8 94       	cli
+  74:	f8 94       	cli
 	DDRA |= ( LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set data direction.
-  7c:	8a b3       	in	r24, 0x1a	; 26
-  7e:	87 60       	ori	r24, 0x07	; 7
-  80:	8a bb       	out	0x1a, r24	; 26
+  76:	8a b3       	in	r24, 0x1a	; 26
+  78:	87 60       	ori	r24, 0x07	; 7
+  7a:	8a bb       	out	0x1a, r24	; 26
 	DDRA |= (0<<PWR);										// set PWR button pin as input.
-  82:	8a b3       	in	r24, 0x1a	; 26
-  84:	8a bb       	out	0x1a, r24	; 26
+  7c:	8a b3       	in	r24, 0x1a	; 26
+  7e:	8a bb       	out	0x1a, r24	; 26
 	PORTA |= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
-  86:	8b b3       	in	r24, 0x1b	; 27
-  88:	87 60       	ori	r24, 0x07	; 7
-  8a:	8b bb       	out	0x1b, r24	; 27
-	
-	
-	
-	
-	// code to plant interrupt on button PWR button on PA3.
-	cli();
-  8c:	f8 94       	cli
-	nTimeMillis = 0;	
-  8e:	10 92 61 00 	sts	0x0061, r1
-  92:	10 92 60 00 	sts	0x0060, r1
-	PCMSK0 |= ( 1 << PCINT3);	// set bit PCINT3 as button is on this interrupt.
-  96:	93 9a       	sbi	0x12, 3	; 18
-	GIMSK |= ( 1 << PCIE0);	// enable interrupt pin change.from 0 - 7 pcints. where pcint3 is been configured.
-  98:	8b b7       	in	r24, 0x3b	; 59
-  9a:	80 61       	ori	r24, 0x10	; 16
-  9c:	8b bf       	out	0x3b, r24	; 59
-	sei();
-  9e:	78 94       	sei
+  80:	8b b3       	in	r24, 0x1b	; 27
+  82:	87 60       	ori	r24, 0x07	; 7
+  84:	8b bb       	out	0x1b, r24	; 27
+
+//////////////////////////////////////////////////////////////////////////
+
+
+int main(void)
+{	
+  86:	38 ee       	ldi	r19, 0xE8	; 232
+  88:	23 e0       	ldi	r18, 0x03	; 3
+// 			
+			nTimeMillis = 0;
+			
+			PORTA &= (LED0_OFF | LED1_OFF | AL_SHDN_LOW);			// Turn off.
+								
+			devState = true;
+  8a:	61 e0       	ldi	r22, 0x01	; 1
+			//////////////////////////////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////////////////////////////
+			// sleep now.
+			sbi(MCUCR,PUD);                                  //Disables All Internal Pullup Resistors
+			ACSR = ( 1 << ACD );			// Turn off analog comparator.
+  8c:	50 e8       	ldi	r21, 0x80	; 128
+			PRR = 0x0F;						// reduce all power before sleep.
+  8e:	4f e0       	ldi	r20, 0x0F	; 15
 	
     while(1)
     {
          //code goes here.		 
 		 
 		if( (PINA&(1<<PINA3)) == (0x00) && devState == false){
-  a0:	cb 99       	sbic	0x19, 3	; 25
-  a2:	05 c0       	rjmp	.+10     	; 0xae <main+0x36>
-  a4:	80 91 62 00 	lds	r24, 0x0062
-  a8:	81 11       	cpse	r24, r1
-  aa:	05 c0       	rjmp	.+10     	; 0xb6 <main+0x3e>
-  ac:	0a c0       	rjmp	.+20     	; 0xc2 <main+0x4a>
-			sleep_enable();
-			sleep_mode();
+  90:	cb 99       	sbic	0x19, 3	; 25
+  92:	14 c0       	rjmp	.+40     	; 0xbc <main+0x4a>
+  94:	80 91 62 00 	lds	r24, 0x0062
+  98:	81 11       	cpse	r24, r1
+  9a:	10 c0       	rjmp	.+32     	; 0xbc <main+0x4a>
+  9c:	2a c0       	rjmp	.+84     	; 0xf2 <main+0x80>
 			
+			while (nTimeMillis < PRESS_WAIT)
+			{
+				if ( (PINA&(1<<PINA3)) == (0x00) )
+  9e:	cb 9b       	sbis	0x19, 3	; 25
+  a0:	03 c0       	rjmp	.+6      	; 0xa8 <main+0x36>
+  a2:	58 c0       	rjmp	.+176    	; 0x154 <main+0xe2>
+  a4:	cb 99       	sbic	0x19, 3	; 25
+  a6:	56 c0       	rjmp	.+172    	; 0x154 <main+0xe2>
+				{
+					nTimeMillis++;						
+  a8:	01 96       	adiw	r24, 0x01	; 1
+  aa:	90 93 61 00 	sts	0x0061, r25
+  ae:	80 93 60 00 	sts	0x0060, r24
+    {
+         //code goes here.		 
+		 
+		if( (PINA&(1<<PINA3)) == (0x00) && devState == false){
+			
+			while (nTimeMillis < PRESS_WAIT)
+  b2:	8c 32       	cpi	r24, 0x2C	; 44
+  b4:	71 e0       	ldi	r23, 0x01	; 1
+  b6:	97 07       	cpc	r25, r23
+  b8:	a9 f7       	brne	.-22     	; 0xa4 <main+0x32>
+  ba:	23 c0       	rjmp	.+70     	; 0x102 <main+0x90>
+
+//////////////////////////////////////////////////////////////////////////
+
+
+int main(void)
+{	
+  bc:	83 2f       	mov	r24, r19
+  be:	92 2f       	mov	r25, r18
+  c0:	01 97       	sbiw	r24, 0x01	; 1
+			sbi(ADCSRA,ADEN);                             //switch Analog to Digital Converter ON
+			
+		}	
+		
+		
+		for (int i=0; i < 1000; i++)
+  c2:	00 97       	sbiw	r24, 0x00	; 0
+  c4:	e9 f7       	brne	.-6      	; 0xc0 <main+0x4e>
+		{
+			// nops.
 		}
 		
 		if (devState == true)
-  ae:	80 91 62 00 	lds	r24, 0x0062
-  b2:	88 23       	and	r24, r24
-  b4:	a9 f3       	breq	.-22     	; 0xa0 <main+0x28>
+  c6:	80 91 62 00 	lds	r24, 0x0062
+  ca:	88 23       	and	r24, r24
+  cc:	71 f0       	breq	.+28     	; 0xea <main+0x78>
 		{
-			PORTA &= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
-  b6:	8b b3       	in	r24, 0x1b	; 27
-  b8:	87 70       	andi	r24, 0x07	; 7
-  ba:	8b bb       	out	0x1b, r24	; 27
-			devState = false;
-  bc:	10 92 62 00 	sts	0x0062, r1
-  c0:	ef cf       	rjmp	.-34     	; 0xa0 <main+0x28>
-// 			{
-// 				nTimeMillis = 0;
-// 				continue;
-// 			}
-// 			
-			nTimeMillis = 0;
-  c2:	10 92 61 00 	sts	0x0061, r1
-  c6:	10 92 60 00 	sts	0x0060, r1
-			
-			PORTA &= (LED0_OFF | LED1_OFF );			// set HIGH.Set SHDN to HIGH (Active LOW)	
-  ca:	8b b3       	in	r24, 0x1b	; 27
-  cc:	1b ba       	out	0x1b, r1	; 27
-								
-			devState == true;
-								
-			
-					
-			set_sleep_mode( SLEEP_MODE_PWR_DOWN );			
+			set_sleep_mode( SLEEP_MODE_IDLE );
   ce:	85 b7       	in	r24, 0x35	; 53
   d0:	87 7e       	andi	r24, 0xE7	; 231
-  d2:	80 61       	ori	r24, 0x10	; 16
-  d4:	85 bf       	out	0x35, r24	; 53
+  d2:	85 bf       	out	0x35, r24	; 53
 			sleep_enable();
-  d6:	85 b7       	in	r24, 0x35	; 53
-  d8:	80 62       	ori	r24, 0x20	; 32
-  da:	85 bf       	out	0x35, r24	; 53
-			sleep_mode();
-  dc:	85 b7       	in	r24, 0x35	; 53
-  de:	80 62       	ori	r24, 0x20	; 32
-  e0:	85 bf       	out	0x35, r24	; 53
-  e2:	88 95       	sleep
-  e4:	85 b7       	in	r24, 0x35	; 53
-  e6:	8f 7d       	andi	r24, 0xDF	; 223
-  e8:	85 bf       	out	0x35, r24	; 53
-  ea:	e1 cf       	rjmp	.-62     	; 0xae <main+0x36>
+  d4:	85 b7       	in	r24, 0x35	; 53
+  d6:	80 62       	ori	r24, 0x20	; 32
+  d8:	85 bf       	out	0x35, r24	; 53
+			sleep_mode();// sleep_diable is included in this macro function.
+  da:	85 b7       	in	r24, 0x35	; 53
+  dc:	80 62       	ori	r24, 0x20	; 32
+  de:	85 bf       	out	0x35, r24	; 53
+  e0:	88 95       	sleep
+  e2:	85 b7       	in	r24, 0x35	; 53
+  e4:	8f 7d       	andi	r24, 0xDF	; 223
+  e6:	85 bf       	out	0x35, r24	; 53
+  e8:	d3 cf       	rjmp	.-90     	; 0x90 <main+0x1e>
+			//////////////////////////////////////////////////////////////////////////
+		}
+		else{
+			PORTA |= (LED0_ON | LED1_ON | AL_SHDN_HIGH);			// set HIGH.Set SHDN to HIGH (Active LOW)
+  ea:	8b b3       	in	r24, 0x1b	; 27
+  ec:	87 60       	ori	r24, 0x07	; 7
+  ee:	8b bb       	out	0x1b, r24	; 27
+  f0:	cf cf       	rjmp	.-98     	; 0x90 <main+0x1e>
+    {
+         //code goes here.		 
+		 
+		if( (PINA&(1<<PINA3)) == (0x00) && devState == false){
+			
+			while (nTimeMillis < PRESS_WAIT)
+  f2:	80 91 60 00 	lds	r24, 0x0060
+  f6:	90 91 61 00 	lds	r25, 0x0061
+  fa:	8c 32       	cpi	r24, 0x2C	; 44
+  fc:	71 e0       	ldi	r23, 0x01	; 1
+  fe:	97 07       	cpc	r25, r23
+ 100:	70 f2       	brcs	.-100    	; 0x9e <main+0x2c>
+			{
+				nTimeMillis = 0;
+				continue;
+			}
+// 			
+			nTimeMillis = 0;
+ 102:	10 92 61 00 	sts	0x0061, r1
+ 106:	10 92 60 00 	sts	0x0060, r1
+			
+			PORTA &= (LED0_OFF | LED1_OFF | AL_SHDN_LOW);			// Turn off.
+ 10a:	8b b3       	in	r24, 0x1b	; 27
+ 10c:	1b ba       	out	0x1b, r1	; 27
+								
+			devState = true;
+ 10e:	60 93 62 00 	sts	0x0062, r22
+								
+			//////////////////////////////////////////////////////////////////////////
+			// code to plant interrupt on button PWR button on PA3.
+			cli();
+ 112:	f8 94       	cli
+			nTimeMillis = 0;
+ 114:	10 92 61 00 	sts	0x0061, r1
+ 118:	10 92 60 00 	sts	0x0060, r1
+						
+			PCMSK0 |= ( 1 << PCINT3);	// set bit PCINT3 as button is on this interrupt.			
+ 11c:	93 9a       	sbi	0x12, 3	; 18
+			GIMSK |= ( 1 << PCIE0);	// enable interrupt pin change.from 0 - 7 pcints. where pcint3 is been configured.
+ 11e:	8b b7       	in	r24, 0x3b	; 59
+ 120:	80 61       	ori	r24, 0x10	; 16
+ 122:	8b bf       	out	0x3b, r24	; 59
+			sei();
+ 124:	78 94       	sei
+			//////////////////////////////////////////////////////////////////////////
 
-000000ec <_exit>:
-  ec:	f8 94       	cli
+			//////////////////////////////////////////////////////////////////////////
+			// sleep now.
+			sbi(MCUCR,PUD);                                  //Disables All Internal Pullup Resistors
+ 126:	85 b7       	in	r24, 0x35	; 53
+ 128:	80 64       	ori	r24, 0x40	; 64
+ 12a:	85 bf       	out	0x35, r24	; 53
+			ACSR = ( 1 << ACD );			// Turn off analog comparator.
+ 12c:	58 b9       	out	0x08, r21	; 8
+			PRR = 0x0F;						// reduce all power before sleep.
+ 12e:	40 b9       	out	0x00, r20	; 0
+			cbi(ADCSRA,ADEN);                              //switch Analog to Digital Converter OFF
+ 130:	86 b1       	in	r24, 0x06	; 6
+ 132:	80 78       	andi	r24, 0x80	; 128
+ 134:	86 b9       	out	0x06, r24	; 6
+			
+			set_sleep_mode( SLEEP_MODE_IDLE );			
+ 136:	85 b7       	in	r24, 0x35	; 53
+ 138:	87 7e       	andi	r24, 0xE7	; 231
+ 13a:	85 bf       	out	0x35, r24	; 53
+			sleep_enable();
+ 13c:	85 b7       	in	r24, 0x35	; 53
+ 13e:	80 62       	ori	r24, 0x20	; 32
+ 140:	85 bf       	out	0x35, r24	; 53
+			sleep_mode();// sleep_diable is included in this macro function.
+ 142:	85 b7       	in	r24, 0x35	; 53
+ 144:	80 62       	ori	r24, 0x20	; 32
+ 146:	85 bf       	out	0x35, r24	; 53
+ 148:	88 95       	sleep
+ 14a:	85 b7       	in	r24, 0x35	; 53
+ 14c:	8f 7d       	andi	r24, 0xDF	; 223
+ 14e:	85 bf       	out	0x35, r24	; 53
+			//////////////////////////////////////////////////////////////////////////
+			
+			sbi(ADCSRA,ADEN);                             //switch Analog to Digital Converter ON
+ 150:	37 9a       	sbi	0x06, 7	; 6
+ 152:	b4 cf       	rjmp	.-152    	; 0xbc <main+0x4a>
+				}
+			}
+			
+			if (nTimeMillis < PRESS_WAIT)
+			{
+				nTimeMillis = 0;
+ 154:	10 92 61 00 	sts	0x0061, r1
+ 158:	10 92 60 00 	sts	0x0060, r1
+				continue;
+ 15c:	99 cf       	rjmp	.-206    	; 0x90 <main+0x1e>
 
-000000ee <__stop_program>:
-  ee:	ff cf       	rjmp	.-2      	; 0xee <__stop_program>
+0000015e <_exit>:
+ 15e:	f8 94       	cli
+
+00000160 <__stop_program>:
+ 160:	ff cf       	rjmp	.-2      	; 0x160 <__stop_program>
