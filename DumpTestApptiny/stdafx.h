@@ -13,6 +13,7 @@
 
 #define LED0			( PA2 )
 #define LED1			( PA1 )
+#define SHDWN			( PA0 )
 
 #define LED0_ON			( 1 << PA2 )
 #define LED0_OFF		( 0 << PA2 )
@@ -23,7 +24,7 @@
 #define PWR				PA3			// by default this is HIGH as it is pulled HIGH via VDD.
 #define PWR_BUTTON		( 1 << PWR)
 
-#define PRESS_WAIT 300
+#define PRESS_WAIT 45000
 
 
 
