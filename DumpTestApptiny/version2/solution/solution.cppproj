@@ -121,6 +121,15 @@
     <Compile Include="solution.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="standard.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="standard.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="stdafx.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
