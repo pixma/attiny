@@ -23,7 +23,7 @@ void initDevice();
 state: true- HIGH
 state: false- LOW.                                                                    */
 /************************************************************************/
-void setOutput(unsigned int portNumber, unsigned int pinNumber, bool state);
+void setOutput(unsigned int portNumber, int pinNumber, bool state);
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ void setOutput(unsigned int portNumber, unsigned int pinNumber, bool state);
 state = true : set Output
 state = false: set Input.                                                                  */
 /************************************************************************/
-void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state );
+void pinMode( unsigned int portnumber, int pinNumber, bool state );
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state );
  * 
  * \return unsigned int state 0x00 or 0x01
  */
-unsigned int digitalRead( unsigned int portNumber, unsigned int pinNumber );
+unsigned int digitalRead( unsigned int portNumber, int pinNumber );
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ bool isButtonPushedLong();
  * 
  * \return void
  */
-void plantPinChangeInt(unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn);
+void plantPinChangeInt();
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ void plantPinChangeInt(unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCI
  * 
  * \return void
  */
-void removePinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn );
+void removePinChangeInt(  );
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////

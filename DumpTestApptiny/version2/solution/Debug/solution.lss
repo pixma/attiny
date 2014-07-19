@@ -3,27 +3,27 @@ solution.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000002d0  00000000  00000000  00000074  2**1
+  0 .text         00000134  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  000002d0  00000344  2**0
+  1 .data         00000000  00800060  00000134  000001a8  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .comment      00000030  00000000  00000000  00000344  2**0
+  2 .comment      00000030  00000000  00000000  000001a8  2**0
                   CONTENTS, READONLY
-  3 .debug_aranges 000000a0  00000000  00000000  00000374  2**0
+  3 .debug_aranges 000000a8  00000000  00000000  000001d8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_info   0000083f  00000000  00000000  00000414  2**0
+  4 .debug_info   000004d9  00000000  00000000  00000280  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_abbrev 00000252  00000000  00000000  00000c53  2**0
+  5 .debug_abbrev 00000183  00000000  00000000  00000759  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_line   00000264  00000000  00000000  00000ea5  2**0
+  6 .debug_line   00000214  00000000  00000000  000008dc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_frame  00000184  00000000  00000000  0000110c  2**2
+  7 .debug_frame  00000124  00000000  00000000  00000af0  2**2
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    0000034b  00000000  00000000  00001290  2**0
+  8 .debug_str    0000034f  00000000  00000000  00000c14  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    000007ed  00000000  00000000  000015db  2**0
+  9 .debug_loc    00000127  00000000  00000000  00000f63  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_ranges 00000080  00000000  00000000  00001dc8  2**0
+ 10 .debug_ranges 00000088  00000000  00000000  0000108a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -54,8 +54,8 @@ Disassembly of section .text:
   28:	d2 e0       	ldi	r29, 0x02	; 2
   2a:	de bf       	out	0x3e, r29	; 62
   2c:	cd bf       	out	0x3d, r28	; 61
-  2e:	0c d0       	rcall	.+24     	; 0x48 <main>
-  30:	4d c1       	rjmp	.+666    	; 0x2cc <_exit>
+  2e:	13 d0       	rcall	.+38     	; 0x56 <main>
+  30:	7f c0       	rjmp	.+254    	; 0x130 <_exit>
 
 00000032 <__bad_interrupt>:
   32:	e6 cf       	rjmp	.-52     	; 0x0 <__vectors>
@@ -80,693 +80,363 @@ ISR( PCINT0_vect ){
   44:	1f 90       	pop	r1
   46:	18 95       	reti
 
-00000048 <main>:
+00000048 <_Z15isButtonPressedv>:
+
+bool isButtonPressed()
+{
+	if ( (PINA&(1<<PWR_READ))   == 0x00 )
+  48:	89 b3       	in	r24, 0x19	; 25
+  4a:	83 fb       	bst	r24, 3
+  4c:	88 27       	eor	r24, r24
+  4e:	80 f9       	bld	r24, 0
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+  50:	91 e0       	ldi	r25, 0x01	; 1
+  52:	89 27       	eor	r24, r25
+  54:	08 95       	ret
+
+00000056 <main>:
 
 int main(void)
 {
 	//init device
 	initDevice();
-  48:	1f d0       	rcall	.+62     	; 0x88 <_Z10initDevicev>
+  56:	21 d0       	rcall	.+66     	; 0x9a <_Z10initDevicev>
 	
 	// battery check code goes here
 	
 	// powerDown all
 	powerDown();
-  4a:	19 d1       	rcall	.+562    	; 0x27e <_Z9powerDownv>
+  58:	66 d0       	rcall	.+204    	; 0x126 <_Z9powerDownv>
 	
 	//plant PCI here
-	plantPinChangeInt(PCIE0, PCMSK0, PCINT3);	
-  4c:	62 b3       	in	r22, 0x12	; 18
-  4e:	70 e0       	ldi	r23, 0x00	; 0
-  50:	43 e0       	ldi	r20, 0x03	; 3
-  52:	50 e0       	ldi	r21, 0x00	; 0
-  54:	84 e0       	ldi	r24, 0x04	; 4
-  56:	90 e0       	ldi	r25, 0x00	; 0
-  58:	7d d0       	rcall	.+250    	; 0x154 <_Z17plantPinChangeIntjjj>
+	plantPinChangeInt();	
+  5a:	51 d0       	rcall	.+162    	; 0xfe <_Z17plantPinChangeIntv>
 	
 	//sleep here every time.
 	sleepMe();			
-  5a:	5a d0       	rcall	.+180    	; 0x110 <_Z7sleepMev>
+  5c:	2e d0       	rcall	.+92     	; 0xba <_Z7sleepMev>
 	
     while(1)
     {
 		//remove PCINTs.
-		removePinChangeInt( PCIE0, PCMSK0, PCINT3 );
-  5c:	62 b3       	in	r22, 0x12	; 18
-  5e:	70 e0       	ldi	r23, 0x00	; 0
-  60:	43 e0       	ldi	r20, 0x03	; 3
-  62:	50 e0       	ldi	r21, 0x00	; 0
-  64:	84 e0       	ldi	r24, 0x04	; 4
-  66:	90 e0       	ldi	r25, 0x00	; 0
-  68:	d7 d0       	rcall	.+430    	; 0x218 <_Z18removePinChangeIntjjj>
+		removePinChangeInt(  );
+  5e:	5a d0       	rcall	.+180    	; 0x114 <_Z18removePinChangeIntv>
 		
         //simple delay goes here
         pressWaitDelay();
-  6a:	61 d0       	rcall	.+194    	; 0x12e <_Z14pressWaitDelayv>
+  60:	3b d0       	rcall	.+118    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  62:	3a d0       	rcall	.+116    	; 0xd8 <_Z14pressWaitDelayv>
+		 
+		//simple delay goes here
+		pressWaitDelay(); 
+  64:	39 d0       	rcall	.+114    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  66:	38 d0       	rcall	.+112    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay(); 
+  68:	37 d0       	rcall	.+110    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  6a:	36 d0       	rcall	.+108    	; 0xd8 <_Z14pressWaitDelayv>
         
         // power On
         powerOn();
-  6c:	b0 d0       	rcall	.+352    	; 0x1ce <_Z7powerOnv>
+  6c:	4f d0       	rcall	.+158    	; 0x10c <_Z7powerOnv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  6e:	34 d0       	rcall	.+104    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  70:	33 d0       	rcall	.+102    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  72:	32 d0       	rcall	.+100    	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  74:	31 d0       	rcall	.+98     	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  76:	30 d0       	rcall	.+96     	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  78:	2f d0       	rcall	.+94     	; 0xd8 <_Z14pressWaitDelayv>
         
+		while (isButtonPressed());
+  7a:	e6 df       	rcall	.-52     	; 0x48 <_Z15isButtonPressedv>
+  7c:	81 11       	cpse	r24, r1
+  7e:	fd cf       	rjmp	.-6      	; 0x7a <main+0x24>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  80:	2b d0       	rcall	.+86     	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  82:	2a d0       	rcall	.+84     	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  84:	29 d0       	rcall	.+82     	; 0xd8 <_Z14pressWaitDelayv>
+		
 		//
         // monitor battery level or just check  battery level here a non blocking api.
 		//
 		
 		if( !isButtonPushedLong() ){
-  6e:	66 d0       	rcall	.+204    	; 0x13c <_Z18isButtonPushedLongv>
-  70:	88 23       	and	r24, r24
-  72:	a1 f3       	breq	.-24     	; 0x5c <main+0x14>
+  86:	2f d0       	rcall	.+94     	; 0xe6 <_Z18isButtonPushedLongv>
+  88:	88 23       	and	r24, r24
+  8a:	49 f3       	breq	.-46     	; 0x5e <main+0x8>
 		}
 		
 		//else goes here out of if else snippet.
 		
 		// power Down all
 		powerDown();
-  74:	04 d1       	rcall	.+520    	; 0x27e <_Z9powerDownv>
+  8c:	4c d0       	rcall	.+152    	; 0x126 <_Z9powerDownv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  8e:	24 d0       	rcall	.+72     	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  90:	23 d0       	rcall	.+70     	; 0xd8 <_Z14pressWaitDelayv>
+		
+		//simple delay goes here
+		pressWaitDelay();
+  92:	22 d0       	rcall	.+68     	; 0xd8 <_Z14pressWaitDelayv>
+		
 		
 		//plant PCI here
-		plantPinChangeInt(PCIE0, PCMSK0, PCINT3);
-  76:	62 b3       	in	r22, 0x12	; 18
-  78:	70 e0       	ldi	r23, 0x00	; 0
-  7a:	43 e0       	ldi	r20, 0x03	; 3
-  7c:	50 e0       	ldi	r21, 0x00	; 0
-  7e:	84 e0       	ldi	r24, 0x04	; 4
-  80:	90 e0       	ldi	r25, 0x00	; 0
-  82:	68 d0       	rcall	.+208    	; 0x154 <_Z17plantPinChangeIntjjj>
+		plantPinChangeInt();
+  94:	34 d0       	rcall	.+104    	; 0xfe <_Z17plantPinChangeIntv>
 		
 		//sleep here every time.
 		sleepMe();		
-  84:	45 d0       	rcall	.+138    	; 0x110 <_Z7sleepMev>
-  86:	ea cf       	rjmp	.-44     	; 0x5c <main+0x14>
+  96:	11 d0       	rcall	.+34     	; 0xba <_Z7sleepMev>
+  98:	e2 cf       	rjmp	.-60     	; 0x5e <main+0x8>
 
-00000088 <_Z10initDevicev>:
-
-#include <avr/power.h>
+0000009a <_Z10initDevicev>:
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 
 void initDevice(){
-  88:	cf 93       	push	r28
-  8a:	df 93       	push	r29
-  8c:	cd b7       	in	r28, 0x3d	; 61
-  8e:	de b7       	in	r29, 0x3e	; 62
-  90:	2c 97       	sbiw	r28, 0x0c	; 12
-  92:	0f b6       	in	r0, 0x3f	; 63
-  94:	f8 94       	cli
-  96:	de bf       	out	0x3e, r29	; 62
-  98:	0f be       	out	0x3f, r0	; 63
-  9a:	cd bf       	out	0x3d, r28	; 61
 	// Battery Check and sleep.
-	MCUCR = 0x00;		//disable any intterupt source.
-  9c:	15 be       	out	0x35, r1	; 53
+	MCUCR = 0x00;		//disable any interrupt source.
+  9a:	15 be       	out	0x35, r1	; 53
 	sleep_disable();
-  9e:	85 b7       	in	r24, 0x35	; 53
-  a0:	8f 7d       	andi	r24, 0xDF	; 223
-  a2:	85 bf       	out	0x35, r24	; 53
+  9c:	85 b7       	in	r24, 0x35	; 53
+  9e:	8f 7d       	andi	r24, 0xDF	; 223
+  a0:	85 bf       	out	0x35, r24	; 53
 	
-	unsigned char uchCount = 0;
+	unsigned int uchCount = 0;
 	
-	pinMode(DDRA, LED0 , HIGH);			// set LED0 to output
-  a4:	8a b3       	in	r24, 0x1a	; 26
-  a6:	90 e0       	ldi	r25, 0x00	; 0
-  a8:	9c 87       	std	Y+12, r25	; 0x0c
-  aa:	8b 87       	std	Y+11, r24	; 0x0b
-
-void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state )
-{
-	if (state)
-	{
-		sbi( portnumber, pinNumber );
-  ac:	8b 85       	ldd	r24, Y+11	; 0x0b
-  ae:	84 60       	ori	r24, 0x04	; 4
-  b0:	8b 87       	std	Y+11, r24	; 0x0b
-	sleep_disable();
-	
-	unsigned char uchCount = 0;
-	
-	pinMode(DDRA, LED0 , HIGH);			// set LED0 to output
-	pinMode(DDRA, LED1 , HIGH);			// set LED1 to output
-  b2:	8a b3       	in	r24, 0x1a	; 26
-  b4:	90 e0       	ldi	r25, 0x00	; 0
-  b6:	9a 87       	std	Y+10, r25	; 0x0a
-  b8:	89 87       	std	Y+9, r24	; 0x09
-
-void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state )
-{
-	if (state)
-	{
-		sbi( portnumber, pinNumber );
-  ba:	89 85       	ldd	r24, Y+9	; 0x09
-  bc:	82 60       	ori	r24, 0x02	; 2
-  be:	89 87       	std	Y+9, r24	; 0x09
-	
-	unsigned char uchCount = 0;
-	
-	pinMode(DDRA, LED0 , HIGH);			// set LED0 to output
-	pinMode(DDRA, LED1 , HIGH);			// set LED1 to output
-	pinMode(DDRA, SHDWN , HIGH);		// set SHDWN to output
-  c0:	8a b3       	in	r24, 0x1a	; 26
-  c2:	90 e0       	ldi	r25, 0x00	; 0
-  c4:	98 87       	std	Y+8, r25	; 0x08
-  c6:	8f 83       	std	Y+7, r24	; 0x07
-
-void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state )
-{
-	if (state)
-	{
-		sbi( portnumber, pinNumber );
-  c8:	8f 81       	ldd	r24, Y+7	; 0x07
-  ca:	81 60       	ori	r24, 0x01	; 1
-  cc:	8f 83       	std	Y+7, r24	; 0x07
-	unsigned char uchCount = 0;
-	
-	pinMode(DDRA, LED0 , HIGH);			// set LED0 to output
-	pinMode(DDRA, LED1 , HIGH);			// set LED1 to output
-	pinMode(DDRA, SHDWN , HIGH);		// set SHDWN to output
-	pinMode(DDRA, PWR, LOW );			// set PWR to input.
-  ce:	8a b3       	in	r24, 0x1a	; 26
-  d0:	90 e0       	ldi	r25, 0x00	; 0
-  d2:	9e 83       	std	Y+6, r25	; 0x06
-  d4:	8d 83       	std	Y+5, r24	; 0x05
-	if (state)
-	{
-		sbi( portnumber, pinNumber );
-	}
-	else{
-		cbi( portnumber, pinNumber );
-  d6:	8d 81       	ldd	r24, Y+5	; 0x05
-  d8:	88 7f       	andi	r24, 0xF8	; 248
-  da:	8d 83       	std	Y+5, r24	; 0x05
-	pinMode(DDRA, LED0 , HIGH);			// set LED0 to output
-	pinMode(DDRA, LED1 , HIGH);			// set LED1 to output
-	pinMode(DDRA, SHDWN , HIGH);		// set SHDWN to output
-	pinMode(DDRA, PWR, LOW );			// set PWR to input.
-	
-	setOutput(PORTA, LED0, HIGH);
-  dc:	8b b3       	in	r24, 0x1b	; 27
-  de:	90 e0       	ldi	r25, 0x00	; 0
-  e0:	9c 83       	std	Y+4, r25	; 0x04
-  e2:	8b 83       	std	Y+3, r24	; 0x03
-}
-
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-  e4:	8b 81       	ldd	r24, Y+3	; 0x03
-  e6:	84 60       	ori	r24, 0x04	; 4
-  e8:	8b 83       	std	Y+3, r24	; 0x03
-  ea:	8f ef       	ldi	r24, 0xFF	; 255
-  ec:	81 50       	subi	r24, 0x01	; 1
-	pinMode(DDRA, LED1 , HIGH);			// set LED1 to output
-	pinMode(DDRA, SHDWN , HIGH);		// set SHDWN to output
-	pinMode(DDRA, PWR, LOW );			// set PWR to input.
-	
-	setOutput(PORTA, LED0, HIGH);
-	while ( uchCount < 255 ){
-  ee:	f1 f7       	brne	.-4      	; 0xec <_Z10initDevicev+0x64>
+	sbi(DDRA, LED0);					// set LED0 to output
+  a2:	d1 9a       	sbi	0x1a, 1	; 26
+	sbi(DDRA, LED1);					// set LED1 to output
+  a4:	d2 9a       	sbi	0x1a, 2	; 26
+	sbi(DDRA, SHDWN);					// set SHDWN to output
+  a6:	d0 9a       	sbi	0x1a, 0	; 26
+	cbi(DDRA, PWR);						// set PWR to input.
+  a8:	d3 98       	cbi	0x1a, 3	; 26
+		
+	sbi(PORTA, LED0);
+  aa:	d9 9a       	sbi	0x1b, 1	; 27
+  ac:	88 ed       	ldi	r24, 0xD8	; 216
+  ae:	96 ed       	ldi	r25, 0xD6	; 214
+  b0:	01 97       	sbiw	r24, 0x01	; 1
+	while ( uchCount < 55000 ){
+  b2:	00 97       	sbiw	r24, 0x00	; 0
+  b4:	e9 f7       	brne	.-6      	; 0xb0 <_Z10initDevicev+0x16>
 		uchCount++;
-	}
-	setOutput(PORTA, LED0, LOW);
-  f0:	8b b3       	in	r24, 0x1b	; 27
-  f2:	90 e0       	ldi	r25, 0x00	; 0
-  f4:	9a 83       	std	Y+2, r25	; 0x02
-  f6:	89 83       	std	Y+1, r24	; 0x01
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
-  f8:	89 81       	ldd	r24, Y+1	; 0x01
-  fa:	8c 7f       	andi	r24, 0xFC	; 252
-  fc:	89 83       	std	Y+1, r24	; 0x01
-	while ( uchCount < 255 ){
-		uchCount++;
-	}
-	setOutput(PORTA, LED0, LOW);
+	}	
 	
-}
-  fe:	2c 96       	adiw	r28, 0x0c	; 12
- 100:	0f b6       	in	r0, 0x3f	; 63
- 102:	f8 94       	cli
- 104:	de bf       	out	0x3e, r29	; 62
- 106:	0f be       	out	0x3f, r0	; 63
- 108:	cd bf       	out	0x3d, r28	; 61
- 10a:	df 91       	pop	r29
- 10c:	cf 91       	pop	r28
- 10e:	08 95       	ret
+	cbi(PORTA, LED0);
+  b6:	d9 98       	cbi	0x1b, 1	; 27
+  b8:	08 95       	ret
 
-00000110 <_Z7sleepMev>:
+000000ba <_Z7sleepMev>:
 	return ( (portNumber & (1<<pinNumber) ) >> pinNumber );// will return 0x00 or 0x01;
 }
 
 void sleepMe()
 {		
 	set_sleep_mode( SLEEP_MODE_PWR_DOWN );
- 110:	85 b7       	in	r24, 0x35	; 53
- 112:	87 7e       	andi	r24, 0xE7	; 231
- 114:	80 61       	ori	r24, 0x10	; 16
- 116:	85 bf       	out	0x35, r24	; 53
+  ba:	85 b7       	in	r24, 0x35	; 53
+  bc:	87 7e       	andi	r24, 0xE7	; 231
+  be:	80 61       	ori	r24, 0x10	; 16
+  c0:	85 bf       	out	0x35, r24	; 53
 	sleep_enable();
- 118:	85 b7       	in	r24, 0x35	; 53
- 11a:	80 62       	ori	r24, 0x20	; 32
- 11c:	85 bf       	out	0x35, r24	; 53
+  c2:	85 b7       	in	r24, 0x35	; 53
+  c4:	80 62       	ori	r24, 0x20	; 32
+  c6:	85 bf       	out	0x35, r24	; 53
 	sleep_mode();
- 11e:	85 b7       	in	r24, 0x35	; 53
- 120:	80 62       	ori	r24, 0x20	; 32
- 122:	85 bf       	out	0x35, r24	; 53
- 124:	88 95       	sleep
- 126:	85 b7       	in	r24, 0x35	; 53
- 128:	8f 7d       	andi	r24, 0xDF	; 223
- 12a:	85 bf       	out	0x35, r24	; 53
- 12c:	08 95       	ret
+  c8:	85 b7       	in	r24, 0x35	; 53
+  ca:	80 62       	ori	r24, 0x20	; 32
+  cc:	85 bf       	out	0x35, r24	; 53
+  ce:	88 95       	sleep
+  d0:	85 b7       	in	r24, 0x35	; 53
+  d2:	8f 7d       	andi	r24, 0xDF	; 223
+  d4:	85 bf       	out	0x35, r24	; 53
+  d6:	08 95       	ret
 
-0000012e <_Z14pressWaitDelayv>:
+000000d8 <_Z14pressWaitDelayv>:
 }
 
 bool pressWaitDelay()
 {
- 12e:	89 ec       	ldi	r24, 0xC9	; 201
- 130:	9f ea       	ldi	r25, 0xAF	; 175
- 132:	01 97       	sbiw	r24, 0x01	; 1
+  d8:	89 ed       	ldi	r24, 0xD9	; 217
+  da:	96 ed       	ldi	r25, 0xD6	; 214
+  dc:	01 97       	sbiw	r24, 0x01	; 1
 	unsigned int nTimeM = 0;
 	
 	while (1)
 	{
 		nTimeM++;
 		if (nTimeM > PRESS_WAIT)
- 134:	00 97       	sbiw	r24, 0x00	; 0
- 136:	e9 f7       	brne	.-6      	; 0x132 <_Z14pressWaitDelayv+0x4>
+  de:	00 97       	sbiw	r24, 0x00	; 0
+  e0:	e9 f7       	brne	.-6      	; 0xdc <_Z14pressWaitDelayv+0x4>
 			break;
 		}
 	}
 	
 	return true;
 }
- 138:	81 e0       	ldi	r24, 0x01	; 1
- 13a:	08 95       	ret
+  e2:	81 e0       	ldi	r24, 0x01	; 1
+  e4:	08 95       	ret
 
-0000013c <_Z18isButtonPushedLongv>:
-bool isButtonPushedLong()
+000000e6 <_Z18isButtonPushedLongv>:
 {
 	unsigned int nPressCount = 0;
 	bool event = false;
 	
-	while (digitalRead(PORTA, PWR) == 0x00)
- 13c:	89 ec       	ldi	r24, 0xC9	; 201
- 13e:	9f ea       	ldi	r25, 0xAF	; 175
- 140:	03 c0       	rjmp	.+6      	; 0x148 <_Z18isButtonPushedLongv+0xc>
- 142:	01 97       	sbiw	r24, 0x01	; 1
+	//while (digitalRead(PORTA, PWR) == 0x00)
+	while ( (PINA&(1<<PWR_READ))   == 0x00)
+  e6:	89 ed       	ldi	r24, 0xD9	; 217
+  e8:	96 ed       	ldi	r25, 0xD6	; 214
+  ea:	03 c0       	rjmp	.+6      	; 0xf2 <_Z18isButtonPushedLongv+0xc>
+  ec:	01 97       	sbiw	r24, 0x01	; 1
 	{
 		nPressCount++;
 		if( nPressCount > PRESS_WAIT ){
- 144:	00 97       	sbiw	r24, 0x00	; 0
- 146:	21 f0       	breq	.+8      	; 0x150 <_Z18isButtonPushedLongv+0x14>
-bool isButtonPushedLong()
+  ee:	00 97       	sbiw	r24, 0x00	; 0
+  f0:	21 f0       	breq	.+8      	; 0xfa <_Z18isButtonPushedLongv+0x14>
 {
 	unsigned int nPressCount = 0;
 	bool event = false;
 	
-	while (digitalRead(PORTA, PWR) == 0x00)
- 148:	db 9b       	sbis	0x1b, 3	; 27
- 14a:	fb cf       	rjmp	.-10     	; 0x142 <_Z18isButtonPushedLongv+0x6>
+	//while (digitalRead(PORTA, PWR) == 0x00)
+	while ( (PINA&(1<<PWR_READ))   == 0x00)
+  f2:	cb 9b       	sbis	0x19, 3	; 25
+  f4:	fb cf       	rjmp	.-10     	; 0xec <_Z18isButtonPushedLongv+0x6>
 }
 
 bool isButtonPushedLong()
 {
 	unsigned int nPressCount = 0;
 	bool event = false;
- 14c:	80 e0       	ldi	r24, 0x00	; 0
- 14e:	08 95       	ret
-	
-	while (digitalRead(PORTA, PWR) == 0x00)
+  f6:	80 e0       	ldi	r24, 0x00	; 0
+  f8:	08 95       	ret
+	//while (digitalRead(PORTA, PWR) == 0x00)
+	while ( (PINA&(1<<PWR_READ))   == 0x00)
 	{
 		nPressCount++;
 		if( nPressCount > PRESS_WAIT ){
 			event = true;
- 150:	81 e0       	ldi	r24, 0x01	; 1
+  fa:	81 e0       	ldi	r24, 0x01	; 1
 			break;
 		}
 	}
 	
 	return event;
 }
- 152:	08 95       	ret
+  fc:	08 95       	ret
 
-00000154 <_Z17plantPinChangeIntjjj>:
+000000fe <_Z17plantPinChangeIntv>:
 
-void plantPinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
+void plantPinChangeInt(  )
 {
- 154:	cf 93       	push	r28
- 156:	df 93       	push	r29
- 158:	cd b7       	in	r28, 0x3d	; 61
- 15a:	de b7       	in	r29, 0x3e	; 62
- 15c:	28 97       	sbiw	r28, 0x08	; 8
- 15e:	0f b6       	in	r0, 0x3f	; 63
- 160:	f8 94       	cli
- 162:	de bf       	out	0x3e, r29	; 62
- 164:	0f be       	out	0x3f, r0	; 63
- 166:	cd bf       	out	0x3d, r28	; 61
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
- 168:	2f b7       	in	r18, 0x3f	; 63
- 16a:	30 e0       	ldi	r19, 0x00	; 0
- 16c:	38 87       	std	Y+8, r19	; 0x08
- 16e:	2f 83       	std	Y+7, r18	; 0x07
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
- 170:	9f 81       	ldd	r25, Y+7	; 0x07
- 172:	90 78       	andi	r25, 0x80	; 128
- 174:	9f 83       	std	Y+7, r25	; 0x07
- 176:	7e 83       	std	Y+6, r23	; 0x06
- 178:	6d 83       	std	Y+5, r22	; 0x05
-}
+	cli();
+  fe:	f8 94       	cli
+	sbi(PCMSK0, PCINT3);	// set bit PCINTN on this interrupt.			
+ 100:	93 9a       	sbi	0x12, 3	; 18
+	sbi(GIMSK, PCIE0);      // enable interrupt pin change.
+ 102:	8b b7       	in	r24, 0x3b	; 59
+ 104:	80 61       	ori	r24, 0x10	; 16
+ 106:	8b bf       	out	0x3b, r24	; 59
+	sei();
+ 108:	78 94       	sei
+ 10a:	08 95       	ret
 
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
- 17a:	9d 81       	ldd	r25, Y+5	; 0x05
- 17c:	21 e0       	ldi	r18, 0x01	; 1
- 17e:	30 e0       	ldi	r19, 0x00	; 0
- 180:	b9 01       	movw	r22, r18
- 182:	02 c0       	rjmp	.+4      	; 0x188 <_Z17plantPinChangeIntjjj+0x34>
- 184:	66 0f       	add	r22, r22
- 186:	77 1f       	adc	r23, r23
- 188:	4a 95       	dec	r20
- 18a:	e2 f7       	brpl	.-8      	; 0x184 <_Z17plantPinChangeIntjjj+0x30>
- 18c:	ab 01       	movw	r20, r22
- 18e:	49 2b       	or	r20, r25
- 190:	4d 83       	std	Y+5, r20	; 0x05
-
-void plantPinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
-{
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(PCMsKn, PCInTn, HIGH);	// set bit PCINTN on this interrupt.			
-	setOutput(GIMSK, PCiEn, HIGH);      // enable interrupt pin change.
- 192:	4b b7       	in	r20, 0x3b	; 59
- 194:	50 e0       	ldi	r21, 0x00	; 0
- 196:	5c 83       	std	Y+4, r21	; 0x04
- 198:	4b 83       	std	Y+3, r20	; 0x03
-}
-
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
- 19a:	4b 81       	ldd	r20, Y+3	; 0x03
- 19c:	b9 01       	movw	r22, r18
- 19e:	02 c0       	rjmp	.+4      	; 0x1a4 <_Z17plantPinChangeIntjjj+0x50>
- 1a0:	66 0f       	add	r22, r22
- 1a2:	77 1f       	adc	r23, r23
- 1a4:	8a 95       	dec	r24
- 1a6:	e2 f7       	brpl	.-8      	; 0x1a0 <_Z17plantPinChangeIntjjj+0x4c>
- 1a8:	cb 01       	movw	r24, r22
- 1aa:	84 2b       	or	r24, r20
- 1ac:	8b 83       	std	Y+3, r24	; 0x03
-void plantPinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
-{
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(PCMsKn, PCInTn, HIGH);	// set bit PCINTN on this interrupt.			
-	setOutput(GIMSK, PCiEn, HIGH);      // enable interrupt pin change.
-	setOutput(SREG, SREG_I, HIGH);		// set global intterupt. alternative code line sei();
- 1ae:	8f b7       	in	r24, 0x3f	; 63
- 1b0:	90 e0       	ldi	r25, 0x00	; 0
- 1b2:	9a 83       	std	Y+2, r25	; 0x02
- 1b4:	89 83       	std	Y+1, r24	; 0x01
-}
-
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
- 1b6:	89 81       	ldd	r24, Y+1	; 0x01
- 1b8:	80 68       	ori	r24, 0x80	; 128
- 1ba:	89 83       	std	Y+1, r24	; 0x01
-{
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(PCMsKn, PCInTn, HIGH);	// set bit PCINTN on this interrupt.			
-	setOutput(GIMSK, PCiEn, HIGH);      // enable interrupt pin change.
-	setOutput(SREG, SREG_I, HIGH);		// set global intterupt. alternative code line sei();
-}
- 1bc:	28 96       	adiw	r28, 0x08	; 8
- 1be:	0f b6       	in	r0, 0x3f	; 63
- 1c0:	f8 94       	cli
- 1c2:	de bf       	out	0x3e, r29	; 62
- 1c4:	0f be       	out	0x3f, r0	; 63
- 1c6:	cd bf       	out	0x3d, r28	; 61
- 1c8:	df 91       	pop	r29
- 1ca:	cf 91       	pop	r28
- 1cc:	08 95       	ret
-
-000001ce <_Z7powerOnv>:
-
-void powerOn()
-{	
- 1ce:	cf 93       	push	r28
- 1d0:	df 93       	push	r29
- 1d2:	00 d0       	rcall	.+0      	; 0x1d4 <_Z7powerOnv+0x6>
- 1d4:	00 d0       	rcall	.+0      	; 0x1d6 <_Z7powerOnv+0x8>
- 1d6:	00 d0       	rcall	.+0      	; 0x1d8 <_Z7powerOnv+0xa>
- 1d8:	cd b7       	in	r28, 0x3d	; 61
- 1da:	de b7       	in	r29, 0x3e	; 62
-	setOutput( PORTA, LED1, HIGH);
- 1dc:	8b b3       	in	r24, 0x1b	; 27
- 1de:	90 e0       	ldi	r25, 0x00	; 0
- 1e0:	9e 83       	std	Y+6, r25	; 0x06
- 1e2:	8d 83       	std	Y+5, r24	; 0x05
-}
-
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
- 1e4:	8d 81       	ldd	r24, Y+5	; 0x05
- 1e6:	82 60       	ori	r24, 0x02	; 2
- 1e8:	8d 83       	std	Y+5, r24	; 0x05
+0000010c <_Z7powerOnv>:
 }
 
 void powerOn()
 {	
-	setOutput( PORTA, LED1, HIGH);
-	setOutput( PORTA, LED0, HIGH);
- 1ea:	8b b3       	in	r24, 0x1b	; 27
- 1ec:	90 e0       	ldi	r25, 0x00	; 0
- 1ee:	9c 83       	std	Y+4, r25	; 0x04
- 1f0:	8b 83       	std	Y+3, r24	; 0x03
+	sbi( PORTA, LED1);
+ 10c:	da 9a       	sbi	0x1b, 2	; 27
+	sbi( PORTA, LED0);
+ 10e:	d9 9a       	sbi	0x1b, 1	; 27
+	sbi( PORTA, SHDWN);	
+ 110:	d8 9a       	sbi	0x1b, 0	; 27
+ 112:	08 95       	ret
+
+00000114 <_Z18removePinChangeIntv>:
 }
 
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
+void removePinChangeInt( )
 {
-	if(state)
-		sbi(portNumber, pinNumber);
- 1f2:	8b 81       	ldd	r24, Y+3	; 0x03
- 1f4:	84 60       	ori	r24, 0x04	; 4
- 1f6:	8b 83       	std	Y+3, r24	; 0x03
+	cli();
+ 114:	f8 94       	cli
+	cbi(SREG, SREG_I);		// clear global intterupt. alternative code line cli();
+ 116:	8f b7       	in	r24, 0x3f	; 63
+ 118:	8f 77       	andi	r24, 0x7F	; 127
+ 11a:	8f bf       	out	0x3f, r24	; 63
+	cbi(GIMSK, PCIE0);      // enable interrupt pin change.	
+ 11c:	8b b7       	in	r24, 0x3b	; 59
+ 11e:	8f 7e       	andi	r24, 0xEF	; 239
+ 120:	8b bf       	out	0x3b, r24	; 59
+	cbi(PCMSK0, PCINT3);	// set bit PCINTN on this interrupt.
+ 122:	93 98       	cbi	0x12, 3	; 18
+ 124:	08 95       	ret
 
-void powerOn()
-{	
-	setOutput( PORTA, LED1, HIGH);
-	setOutput( PORTA, LED0, HIGH);
-	setOutput( PORTA, SHDWN, HIGH);	
- 1f8:	8b b3       	in	r24, 0x1b	; 27
- 1fa:	90 e0       	ldi	r25, 0x00	; 0
- 1fc:	9a 83       	std	Y+2, r25	; 0x02
- 1fe:	89 83       	std	Y+1, r24	; 0x01
-}
-
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
- 200:	89 81       	ldd	r24, Y+1	; 0x01
- 202:	81 60       	ori	r24, 0x01	; 1
- 204:	89 83       	std	Y+1, r24	; 0x01
-void powerOn()
-{	
-	setOutput( PORTA, LED1, HIGH);
-	setOutput( PORTA, LED0, HIGH);
-	setOutput( PORTA, SHDWN, HIGH);	
-}
- 206:	26 96       	adiw	r28, 0x06	; 6
- 208:	0f b6       	in	r0, 0x3f	; 63
- 20a:	f8 94       	cli
- 20c:	de bf       	out	0x3e, r29	; 62
- 20e:	0f be       	out	0x3f, r0	; 63
- 210:	cd bf       	out	0x3d, r28	; 61
- 212:	df 91       	pop	r29
- 214:	cf 91       	pop	r28
- 216:	08 95       	ret
-
-00000218 <_Z18removePinChangeIntjjj>:
-
-void removePinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
-{
- 218:	cf 93       	push	r28
- 21a:	df 93       	push	r29
- 21c:	00 d0       	rcall	.+0      	; 0x21e <_Z18removePinChangeIntjjj+0x6>
- 21e:	00 d0       	rcall	.+0      	; 0x220 <_Z18removePinChangeIntjjj+0x8>
- 220:	00 d0       	rcall	.+0      	; 0x222 <_Z18removePinChangeIntjjj+0xa>
- 222:	cd b7       	in	r28, 0x3d	; 61
- 224:	de b7       	in	r29, 0x3e	; 62
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
- 226:	ef b7       	in	r30, 0x3f	; 63
- 228:	f0 e0       	ldi	r31, 0x00	; 0
- 22a:	fe 83       	std	Y+6, r31	; 0x06
- 22c:	ed 83       	std	Y+5, r30	; 0x05
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
- 22e:	9d 81       	ldd	r25, Y+5	; 0x05
- 230:	90 78       	andi	r25, 0x80	; 128
- 232:	9d 83       	std	Y+5, r25	; 0x05
-}
-
-void removePinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
-{
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(GIMSK, PCiEn, LOW);      // enable interrupt pin change.	
- 234:	eb b7       	in	r30, 0x3b	; 59
- 236:	f0 e0       	ldi	r31, 0x00	; 0
- 238:	fc 83       	std	Y+4, r31	; 0x04
- 23a:	eb 83       	std	Y+3, r30	; 0x03
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
- 23c:	5b 81       	ldd	r21, Y+3	; 0x03
- 23e:	21 e0       	ldi	r18, 0x01	; 1
- 240:	30 e0       	ldi	r19, 0x00	; 0
- 242:	f9 01       	movw	r30, r18
- 244:	02 c0       	rjmp	.+4      	; 0x24a <_Z18removePinChangeIntjjj+0x32>
- 246:	ee 0f       	add	r30, r30
- 248:	ff 1f       	adc	r31, r31
- 24a:	8a 95       	dec	r24
- 24c:	e2 f7       	brpl	.-8      	; 0x246 <_Z18removePinChangeIntjjj+0x2e>
- 24e:	cf 01       	movw	r24, r30
- 250:	81 95       	neg	r24
- 252:	58 23       	and	r21, r24
- 254:	5b 83       	std	Y+3, r21	; 0x03
- 256:	7a 83       	std	Y+2, r23	; 0x02
- 258:	69 83       	std	Y+1, r22	; 0x01
- 25a:	89 81       	ldd	r24, Y+1	; 0x01
- 25c:	02 c0       	rjmp	.+4      	; 0x262 <__stack+0x3>
- 25e:	22 0f       	add	r18, r18
- 260:	33 1f       	adc	r19, r19
- 262:	4a 95       	dec	r20
- 264:	e2 f7       	brpl	.-8      	; 0x25e <_Z18removePinChangeIntjjj+0x46>
- 266:	21 95       	neg	r18
- 268:	28 23       	and	r18, r24
- 26a:	29 83       	std	Y+1, r18	; 0x01
-{
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(GIMSK, PCiEn, LOW);      // enable interrupt pin change.	
-	setOutput(PCMsKn, PCInTn, LOW);	// set bit PCINTN on this interrupt.
+00000126 <_Z9powerDownv>:
 	
 }
- 26c:	26 96       	adiw	r28, 0x06	; 6
- 26e:	0f b6       	in	r0, 0x3f	; 63
- 270:	f8 94       	cli
- 272:	de bf       	out	0x3e, r29	; 62
- 274:	0f be       	out	0x3f, r0	; 63
- 276:	cd bf       	out	0x3d, r28	; 61
- 278:	df 91       	pop	r29
- 27a:	cf 91       	pop	r28
- 27c:	08 95       	ret
-
-0000027e <_Z9powerDownv>:
 
 void powerDown()
 {
- 27e:	cf 93       	push	r28
- 280:	df 93       	push	r29
- 282:	00 d0       	rcall	.+0      	; 0x284 <_Z9powerDownv+0x6>
- 284:	00 d0       	rcall	.+0      	; 0x286 <_Z9powerDownv+0x8>
- 286:	00 d0       	rcall	.+0      	; 0x288 <_Z9powerDownv+0xa>
- 288:	cd b7       	in	r28, 0x3d	; 61
- 28a:	de b7       	in	r29, 0x3e	; 62
-	setOutput( PORTA, LED1, LOW);
- 28c:	8b b3       	in	r24, 0x1b	; 27
- 28e:	90 e0       	ldi	r25, 0x00	; 0
- 290:	9e 83       	std	Y+6, r25	; 0x06
- 292:	8d 83       	std	Y+5, r24	; 0x05
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
- 294:	8d 81       	ldd	r24, Y+5	; 0x05
- 296:	8e 7f       	andi	r24, 0xFE	; 254
- 298:	8d 83       	std	Y+5, r24	; 0x05
-}
-
-void powerDown()
-{
-	setOutput( PORTA, LED1, LOW);
-	setOutput( PORTA, LED0, LOW);
- 29a:	8b b3       	in	r24, 0x1b	; 27
- 29c:	90 e0       	ldi	r25, 0x00	; 0
- 29e:	9c 83       	std	Y+4, r25	; 0x04
- 2a0:	8b 83       	std	Y+3, r24	; 0x03
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
- 2a2:	8b 81       	ldd	r24, Y+3	; 0x03
- 2a4:	8c 7f       	andi	r24, 0xFC	; 252
- 2a6:	8b 83       	std	Y+3, r24	; 0x03
-
-void powerDown()
-{
-	setOutput( PORTA, LED1, LOW);
-	setOutput( PORTA, LED0, LOW);
-	setOutput( PORTA, SHDWN, LOW);
- 2a8:	8b b3       	in	r24, 0x1b	; 27
- 2aa:	90 e0       	ldi	r25, 0x00	; 0
- 2ac:	9a 83       	std	Y+2, r25	; 0x02
- 2ae:	89 83       	std	Y+1, r24	; 0x01
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
-{
-	if(state)
-		sbi(portNumber, pinNumber);
-	else
-		cbi( portNumber, pinNumber );
- 2b0:	89 81       	ldd	r24, Y+1	; 0x01
- 2b2:	89 83       	std	Y+1, r24	; 0x01
-{
-	setOutput( PORTA, LED1, LOW);
-	setOutput( PORTA, LED0, LOW);
-	setOutput( PORTA, SHDWN, LOW);
+	cbi( PORTA, LED1);
+ 126:	da 98       	cbi	0x1b, 2	; 27
+	cbi( PORTA, LED0);
+ 128:	d9 98       	cbi	0x1b, 1	; 27
+	cbi( PORTA, SHDWN);
+ 12a:	d8 98       	cbi	0x1b, 0	; 27
 	
 	cbi(ADCSRA,ADEN);                              //switch Analog to Digital Converter OFF
- 2b4:	86 b1       	in	r24, 0x06	; 6
- 2b6:	80 78       	andi	r24, 0x80	; 128
- 2b8:	86 b9       	out	0x06, r24	; 6
-}
- 2ba:	26 96       	adiw	r28, 0x06	; 6
- 2bc:	0f b6       	in	r0, 0x3f	; 63
- 2be:	f8 94       	cli
- 2c0:	de bf       	out	0x3e, r29	; 62
- 2c2:	0f be       	out	0x3f, r0	; 63
- 2c4:	cd bf       	out	0x3d, r28	; 61
- 2c6:	df 91       	pop	r29
- 2c8:	cf 91       	pop	r28
- 2ca:	08 95       	ret
+ 12c:	37 98       	cbi	0x06, 7	; 6
+ 12e:	08 95       	ret
 
-000002cc <_exit>:
- 2cc:	f8 94       	cli
+00000130 <_exit>:
+ 130:	f8 94       	cli
 
-000002ce <__stop_program>:
- 2ce:	ff cf       	rjmp	.-2      	; 0x2ce <__stop_program>
+00000132 <__stop_program>:
+ 132:	ff cf       	rjmp	.-2      	; 0x132 <__stop_program>

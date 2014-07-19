@@ -32,6 +32,17 @@ ISR( PCINT0_vect ){
 	// ISR code goes here.	
 }
 
+bool isButtonPressed()
+{
+	if ( (PINA&(1<<PWR_READ))   == 0x00 )
+	{
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 int main(void)
 {
 	//init device
@@ -43,7 +54,7 @@ int main(void)
 	powerDown();
 	
 	//plant PCI here
-	plantPinChangeInt(PCIE0, PCMSK0, PCINT3);	
+	plantPinChangeInt();	
 	
 	//sleep here every time.
 	sleepMe();			
@@ -51,14 +62,58 @@ int main(void)
     while(1)
     {
 		//remove PCINTs.
-		removePinChangeInt( PCIE0, PCMSK0, PCINT3 );
+		removePinChangeInt(  );
 		
         //simple delay goes here
         pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		 
+		//simple delay goes here
+		pressWaitDelay(); 
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay(); 
+		
+		//simple delay goes here
+		pressWaitDelay();
         
         // power On
         powerOn();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
         
+		while (isButtonPressed());
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
 		//
         // monitor battery level or just check  battery level here a non blocking api.
 		//
@@ -73,8 +128,18 @@ int main(void)
 		// power Down all
 		powerDown();
 		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		//simple delay goes here
+		pressWaitDelay();
+		
+		
 		//plant PCI here
-		plantPinChangeInt(PCIE0, PCMSK0, PCINT3);
+		plantPinChangeInt();
 		
 		//sleep here every time.
 		sleepMe();		

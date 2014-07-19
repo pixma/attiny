@@ -14,25 +14,26 @@
 
 void initDevice(){
 	// Battery Check and sleep.
-	MCUCR = 0x00;		//disable any intterupt source.
+	MCUCR = 0x00;		//disable any interrupt source.
 	sleep_disable();
 	
-	unsigned char uchCount = 0;
+	unsigned int uchCount = 0;
 	
-	pinMode(DDRA, LED0 , HIGH);			// set LED0 to output
-	pinMode(DDRA, LED1 , HIGH);			// set LED1 to output
-	pinMode(DDRA, SHDWN , HIGH);		// set SHDWN to output
-	pinMode(DDRA, PWR, LOW );			// set PWR to input.
-	
-	setOutput(PORTA, LED0, HIGH);
-	while ( uchCount < 255 ){
+	sbi(DDRA, LED0);					// set LED0 to output
+	sbi(DDRA, LED1);					// set LED1 to output
+	sbi(DDRA, SHDWN);					// set SHDWN to output
+	cbi(DDRA, PWR);						// set PWR to input.
+		
+	sbi(PORTA, LED0);
+	while ( uchCount < 55000 ){
 		uchCount++;
-	}
-	setOutput(PORTA, LED0, LOW);
+	}	
+	
+	cbi(PORTA, LED0);
 	
 }
 
-void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
+void setOutput( unsigned int portNumber, int pinNumber , bool state)
 {
 	if(state)
 		sbi(portNumber, pinNumber);
@@ -40,7 +41,7 @@ void setOutput( unsigned int portNumber, unsigned int pinNumber , bool state)
 		cbi( portNumber, pinNumber );
 }
 
-void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state )
+void pinMode( unsigned int portnumber, int pinNumber, bool state )
 {
 	if (state)
 	{
@@ -51,7 +52,7 @@ void pinMode( unsigned int portnumber, unsigned int pinNumber, bool state )
 	}
 }
 
-unsigned int digitalRead( unsigned int portNumber, unsigned int pinNumber )
+unsigned int digitalRead( unsigned int portNumber, int pinNumber )
 {
 	return ( (portNumber & (1<<pinNumber) ) >> pinNumber );// will return 0x00 or 0x01;
 }
@@ -90,7 +91,8 @@ bool isButtonPushedLong()
 	unsigned int nPressCount = 0;
 	bool event = false;
 	
-	while (digitalRead(PORTA, PWR) == 0x00)
+	//while (digitalRead(PORTA, PWR) == 0x00)
+	while ( (PINA&(1<<PWR_READ))   == 0x00)
 	{
 		nPressCount++;
 		if( nPressCount > PRESS_WAIT ){
@@ -102,34 +104,35 @@ bool isButtonPushedLong()
 	return event;
 }
 
-void plantPinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
+void plantPinChangeInt(  )
 {
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(PCMsKn, PCInTn, HIGH);	// set bit PCINTN on this interrupt.			
-	setOutput(GIMSK, PCiEn, HIGH);      // enable interrupt pin change.
-	setOutput(SREG, SREG_I, HIGH);		// set global intterupt. alternative code line sei();
+	cli();
+	sbi(PCMSK0, PCINT3);	// set bit PCINTN on this interrupt.			
+	sbi(GIMSK, PCIE0);      // enable interrupt pin change.
+	sei();
 }
 
 void powerOn()
 {	
-	setOutput( PORTA, LED1, HIGH);
-	setOutput( PORTA, LED0, HIGH);
-	setOutput( PORTA, SHDWN, HIGH);	
+	sbi( PORTA, LED1);
+	sbi( PORTA, LED0);
+	sbi( PORTA, SHDWN);	
 }
 
-void removePinChangeInt( unsigned int PCiEn, unsigned int PCMsKn, unsigned int PCInTn )
+void removePinChangeInt( )
 {
-	setOutput(SREG, SREG_I, LOW);		// clear global intterupt. alternative code line cli();
-	setOutput(GIMSK, PCiEn, LOW);      // enable interrupt pin change.	
-	setOutput(PCMsKn, PCInTn, LOW);	// set bit PCINTN on this interrupt.
+	cli();
+	cbi(SREG, SREG_I);		// clear global intterupt. alternative code line cli();
+	cbi(GIMSK, PCIE0);      // enable interrupt pin change.	
+	cbi(PCMSK0, PCINT3);	// set bit PCINTN on this interrupt.
 	
 }
 
 void powerDown()
 {
-	setOutput( PORTA, LED1, LOW);
-	setOutput( PORTA, LED0, LOW);
-	setOutput( PORTA, SHDWN, LOW);
+	cbi( PORTA, LED1);
+	cbi( PORTA, LED0);
+	cbi( PORTA, SHDWN);
 	
 	cbi(ADCSRA,ADEN);                              //switch Analog to Digital Converter OFF
 }
